@@ -14,12 +14,12 @@ public class CameraRotationHandler : MonoBehaviour
 
     private void Start()
     {
-        _inputManager.RotationInputReceived += OnRotationInputReceived;
+        _inputManager.RotationInputReceivedInRotationZone += OnRotationInputReceived;
     }
 
     private void OnDestroy()
     {
-        _inputManager.RotationInputReceived -= OnRotationInputReceived;
+        _inputManager.RotationInputReceivedInRotationZone -= OnRotationInputReceived;
     }
 
     private void OnRotationInputReceived(Vector2 delta)

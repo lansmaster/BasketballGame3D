@@ -50,6 +50,74 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Touchscreen"",
+            ""id"": ""6f1c9ef2-006f-4ad7-bae7-f5f5983904e8"",
+            ""actions"": [
+                {
+                    ""name"": ""TouchDelta"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""dcfdcd47-5507-47c3-ab5b-a39b4062e3f1"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TouchPress"",
+                    ""type"": ""Button"",
+                    ""id"": ""4a786481-774f-4b63-a0f2-f2fcb7db588d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TouchPosition"",
+                    ""type"": ""PassThrough"",
+                    ""id"": ""44339568-6e9b-404b-af3f-8d41fe09b697"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""e8b4f937-6aa3-46c6-9617-39d4bb8e1bf7"",
+                    ""path"": ""<Touchscreen>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchDelta"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""451cd923-3326-4100-af8d-fa2d520aa40c"",
+                    ""path"": ""<Touchscreen>/Press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPress"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""451f5a72-37fe-4ef0-8269-94560f9942d6"",
+                    ""path"": ""<Touchscreen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TouchPosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -57,6 +125,11 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         // KeyboardAndMouse
         m_KeyboardAndMouse = asset.FindActionMap("KeyboardAndMouse", throwIfNotFound: true);
         m_KeyboardAndMouse_MouseDelta = m_KeyboardAndMouse.FindAction("MouseDelta", throwIfNotFound: true);
+        // Touchscreen
+        m_Touchscreen = asset.FindActionMap("Touchscreen", throwIfNotFound: true);
+        m_Touchscreen_TouchDelta = m_Touchscreen.FindAction("TouchDelta", throwIfNotFound: true);
+        m_Touchscreen_TouchPress = m_Touchscreen.FindAction("TouchPress", throwIfNotFound: true);
+        m_Touchscreen_TouchPosition = m_Touchscreen.FindAction("TouchPosition", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -160,8 +233,76 @@ public partial class @InputMap: IInputActionCollection2, IDisposable
         }
     }
     public KeyboardAndMouseActions @KeyboardAndMouse => new KeyboardAndMouseActions(this);
+
+    // Touchscreen
+    private readonly InputActionMap m_Touchscreen;
+    private List<ITouchscreenActions> m_TouchscreenActionsCallbackInterfaces = new List<ITouchscreenActions>();
+    private readonly InputAction m_Touchscreen_TouchDelta;
+    private readonly InputAction m_Touchscreen_TouchPress;
+    private readonly InputAction m_Touchscreen_TouchPosition;
+    public struct TouchscreenActions
+    {
+        private @InputMap m_Wrapper;
+        public TouchscreenActions(@InputMap wrapper) { m_Wrapper = wrapper; }
+        public InputAction @TouchDelta => m_Wrapper.m_Touchscreen_TouchDelta;
+        public InputAction @TouchPress => m_Wrapper.m_Touchscreen_TouchPress;
+        public InputAction @TouchPosition => m_Wrapper.m_Touchscreen_TouchPosition;
+        public InputActionMap Get() { return m_Wrapper.m_Touchscreen; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(TouchscreenActions set) { return set.Get(); }
+        public void AddCallbacks(ITouchscreenActions instance)
+        {
+            if (instance == null || m_Wrapper.m_TouchscreenActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_TouchscreenActionsCallbackInterfaces.Add(instance);
+            @TouchDelta.started += instance.OnTouchDelta;
+            @TouchDelta.performed += instance.OnTouchDelta;
+            @TouchDelta.canceled += instance.OnTouchDelta;
+            @TouchPress.started += instance.OnTouchPress;
+            @TouchPress.performed += instance.OnTouchPress;
+            @TouchPress.canceled += instance.OnTouchPress;
+            @TouchPosition.started += instance.OnTouchPosition;
+            @TouchPosition.performed += instance.OnTouchPosition;
+            @TouchPosition.canceled += instance.OnTouchPosition;
+        }
+
+        private void UnregisterCallbacks(ITouchscreenActions instance)
+        {
+            @TouchDelta.started -= instance.OnTouchDelta;
+            @TouchDelta.performed -= instance.OnTouchDelta;
+            @TouchDelta.canceled -= instance.OnTouchDelta;
+            @TouchPress.started -= instance.OnTouchPress;
+            @TouchPress.performed -= instance.OnTouchPress;
+            @TouchPress.canceled -= instance.OnTouchPress;
+            @TouchPosition.started -= instance.OnTouchPosition;
+            @TouchPosition.performed -= instance.OnTouchPosition;
+            @TouchPosition.canceled -= instance.OnTouchPosition;
+        }
+
+        public void RemoveCallbacks(ITouchscreenActions instance)
+        {
+            if (m_Wrapper.m_TouchscreenActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(ITouchscreenActions instance)
+        {
+            foreach (var item in m_Wrapper.m_TouchscreenActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_TouchscreenActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public TouchscreenActions @Touchscreen => new TouchscreenActions(this);
     public interface IKeyboardAndMouseActions
     {
         void OnMouseDelta(InputAction.CallbackContext context);
+    }
+    public interface ITouchscreenActions
+    {
+        void OnTouchDelta(InputAction.CallbackContext context);
+        void OnTouchPress(InputAction.CallbackContext context);
+        void OnTouchPosition(InputAction.CallbackContext context);
     }
 }

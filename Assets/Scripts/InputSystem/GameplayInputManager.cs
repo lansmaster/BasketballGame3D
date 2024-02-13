@@ -3,10 +3,15 @@ using UnityEngine;
 
 public class GameplayInputManager : MonoBehaviour
 {
-    public event Action<Vector2> RotationInputReceived;
+    [SerializeField] private RectTransform _rotationInputZone;
+    [SerializeField] private RectTransform _rotationTrowingZone;
+
+    public event Action<Vector2> RotationInputReceivedInRotationZone;
+    public event Action<Vector2> RotationInputReceivedInTrowingZone;
 
     private InputMap _inputMap;
-    private MouseGameplayInput _mouseInput;
+    private TouchscreenGameplayInput _touchscreenInput;
+    //private MouseGameplayInput _mouseInput;
 
     private void Awake()
     {
@@ -14,18 +19,32 @@ public class GameplayInputManager : MonoBehaviour
 
         _inputMap.Enable();
 
-        InitMouseInput(_inputMap);
+        InitTouchscreenInput(_inputMap);
+        //InitMouseInput(_inputMap);
     }
 
-    private void InitMouseInput(InputMap inputMap)
+    private void InitTouchscreenInput(InputMap inputMap)
     {
-        _mouseInput = new MouseGameplayInput(inputMap);
+        _touchscreenInput = new TouchscreenGameplayInput(inputMap, _rotationInputZone, _rotationTrowingZone);
 
-        _mouseInput.RotationInputReceived += OnRotationInputReceived;
+        _touchscreenInput.RotationInputReceivedInRotationZone += OnRotationInputReceivedInRotationZone;
+        _touchscreenInput.RotationInputReceivedInTrowingZone += OnRotationInputReceivedInTrowingZone;
     }
 
-    private void OnRotationInputReceived(Vector2 delta)
+    //private void InitMouseInput(InputMap inputMap)
+    //{
+    //    _mouseInput = new MouseGameplayInput(inputMap);
+
+    //    _mouseInput.RotationInputReceived += RotationInputReceivedInRotationZone;
+    //}
+
+    private void OnRotationInputReceivedInRotationZone(Vector2 delta)
     {
-        RotationInputReceived?.Invoke(delta);
+        RotationInputReceivedInRotationZone?.Invoke(delta);
+    }
+
+    private void OnRotationInputReceivedInTrowingZone(Vector2 delta)
+    {
+        RotationInputReceivedInTrowingZone?.Invoke(delta);
     }
 }
