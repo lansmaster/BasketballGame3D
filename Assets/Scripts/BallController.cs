@@ -4,7 +4,6 @@ using UnityEngine;
 public class BallController : MonoBehaviour
 {
     [SerializeField] private GameplayInputManager _inputManager;
-    [SerializeField] private GameObject _ball;
     [SerializeField] private Transform _cameraTransform;
     [SerializeField] private float _ballDistanceOffset = 2f;
     [SerializeField] private float _ballThrowingForce = 0.4f;
@@ -15,7 +14,7 @@ public class BallController : MonoBehaviour
 
     private void Start()
     {
-        _ballRigidbody = _ball.GetComponent<Rigidbody>();
+        _ballRigidbody = GetComponent<Rigidbody>();
         _ballRigidbody.useGravity = false;
         _inputManager.RotationInputReceivedInTrowingZone += OnRotationInputReceived;
     }
@@ -31,15 +30,25 @@ public class BallController : MonoBehaviour
         {
             _ballRigidbody.isKinematic = false;
             _ballRigidbody.useGravity = false;
-            _ball.transform.position = _cameraTransform.position + _cameraTransform.forward * _ballDistanceOffset;
+            transform.position = _cameraTransform.position + _cameraTransform.forward * _ballDistanceOffset;
         }
     }
 
-    public void PickUpBall()
+    public void PickUpBall() // кнопка
     {
         _holdingBall = true;
         _ballRigidbody.isKinematic = true;
         _inputManager.RotationInputReceivedInTrowingZone += OnRotationInputReceived;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.tag == "Wall" || collision.collider.tag == "Ground")
+        {
+            _holdingBall = true;
+            _ballRigidbody.isKinematic = true;
+            _inputManager.RotationInputReceivedInTrowingZone += OnRotationInputReceived;
+        }
     }
 
     private void OnRotationInputReceived(Vector2 delta)
