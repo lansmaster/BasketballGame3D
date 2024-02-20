@@ -7997,7 +7997,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 300
-  field of view: 80
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -8352,7 +8352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1313983720
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8812,7 +8812,7 @@ Transform:
   m_GameObject: {fileID: 1428243072}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3.29, z: 2.26}
+  m_LocalPosition: {x: 2, y: 3.29, z: 2.26}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9315,7 +9315,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.0735625, y: 0.04855556}
   m_AnchorMax: {x: 0.24147917, y: 0.20647477}
-  m_AnchoredPosition: {x: -0.5, y: 0.014678955}
+  m_AnchoredPosition: {x: -0.5, y: 0.0146484375}
   m_SizeDelta: {x: -0.38720703, y: 0.02911377}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1852071458
