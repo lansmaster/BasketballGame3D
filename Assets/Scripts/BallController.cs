@@ -26,6 +26,8 @@ public class BallController : MonoBehaviour
 
     private void Update()
     {
+        Debug.Log(_cameraTransform.forward);
+
         if (_holdingBall)
         {
             _ballRigidbody.isKinematic = false;
@@ -58,9 +60,79 @@ public class BallController : MonoBehaviour
         _holdingBall = false;
         _ballRigidbody.useGravity = true;
 
-        var throwingVector = new Vector3(-delta.y * _ballThrowingDistance, delta.y, delta.x);
+        if(_cameraTransform.forward.x < 0 && _cameraTransform.forward.z > 0) 
+        {
+            Debug.Log("Сектор 1");
 
-        _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+            var throwingVector = new Vector3
+            (
+                _cameraTransform.forward.x * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * Mathf.Abs(_cameraTransform.forward.z)),
+                (_cameraTransform.forward.y * delta.y) + delta.y,
+                _cameraTransform.forward.z * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.z)))
+            );
+            _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+        }
+        else if(_cameraTransform.forward.x > 0 && _cameraTransform.forward.z > 0)
+        {
+
+        }
+        else if (_cameraTransform.forward.x > 0 && _cameraTransform.forward.z < 0)
+        {
+
+        }
+        else if (_cameraTransform.forward.x < 0 && _cameraTransform.forward.z < 0)
+        {
+
+        }
+        
+
+
+        if (_cameraTransform.forward.x >= 0f && _cameraTransform.forward.x <= 1f && _cameraTransform.forward.z <= 1f && _cameraTransform.forward.z >= 0f)
+        {
+            Debug.Log("Сектор 2");
+
+            var throwingVector = new Vector3
+            (
+                _cameraTransform.forward.x * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * Mathf.Abs(_cameraTransform.forward.z)),
+                (_cameraTransform.forward.y * delta.y) + delta.y,
+                _cameraTransform.forward.z * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.z)))
+            );
+            _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+        }
+        if (_cameraTransform.forward.x >= 0f && _cameraTransform.forward.x <= 1f && _cameraTransform.forward.z <= 0f && _cameraTransform.forward.z >= -1f)
+        {
+            Debug.Log("Сектор 3");
+
+            var throwingVector = new Vector3
+            (
+                _cameraTransform.forward.x * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.x))),
+                (_cameraTransform.forward.y * delta.y) + delta.y,
+                _cameraTransform.forward.z * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * _cameraTransform.forward.z)
+            );
+            _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+        }
+        if (_cameraTransform.forward.x >= -1f && _cameraTransform.forward.x <= 0f && _cameraTransform.forward.z <= 0f && _cameraTransform.forward.z >= -1f)
+        {
+            Debug.Log("Сектор 4");
+
+            var throwingVector = new Vector3
+            (
+                _cameraTransform.forward.x * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * _cameraTransform.forward.x),
+                (_cameraTransform.forward.y * delta.y) + delta.y,
+                _cameraTransform.forward.z * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.z)))
+            );
+            _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+        }
+        else
+        {
+            var throwingVector = new Vector3
+            (
+                _cameraTransform.forward.x * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.x))),
+                (_cameraTransform.forward.y * delta.y) + delta.y,
+                _cameraTransform.forward.z * Mathf.Abs(delta.y) * _ballThrowingDistance + (delta.x * (1 - Mathf.Abs(_cameraTransform.forward.z)))
+            );
+            _ballRigidbody.AddForce(throwingVector * _ballThrowingForce);
+        }
     }
 
     IEnumerator Wait()
