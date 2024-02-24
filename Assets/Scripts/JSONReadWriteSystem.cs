@@ -4,8 +4,49 @@ using UnityEngine;
 
 public class JSONReadWriteSystem : MonoBehaviour
 {
-    [SerializeField] private int _hits;
-    [SerializeField] private int _misses;
+    //public event Action<int, int> Changed;
+
+    //public int Hits
+    //{
+    //    get => _hits;
+    //    private set
+    //    {
+    //        var oldValue = _hits;
+    //        _hits = value;
+
+    //        if (oldValue != _hits)
+    //        {
+    //            Changed?.Invoke(oldValue, _hits);
+    //        }
+    //    }
+    //}
+    //public int Misses
+    //{
+    //    get => _misses;
+    //    private set
+    //    {
+    //        var oldValue = _misses;
+    //        _misses = value;
+
+    //        if (oldValue != _misses)
+    //        {
+    //            Changed?.Invoke(oldValue, _misses);
+    //        }
+    //    }
+    //}
+
+    private int _hits;
+    private int _misses;
+
+    //private void Awake()
+    //{
+    //    LoadFormJson();
+    //}
+
+    //private void OnDestroy()
+    //{
+    //    SaveToJson();
+    //}
 
     public void SaveToJson()
     {

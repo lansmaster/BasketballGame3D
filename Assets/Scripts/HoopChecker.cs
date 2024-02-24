@@ -20,7 +20,7 @@ public class HoopChecker : MonoBehaviour
         StartCoroutine(Wait());
     }
 
-    IEnumerator Wait()
+    private IEnumerator Wait()
     {
         yield return new WaitForSeconds(3);
         _particleSystem.Stop();
