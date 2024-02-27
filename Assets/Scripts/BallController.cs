@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ public class BallController : MonoBehaviour
 
     private Rigidbody _ballRigidbody;
     private bool _holdingBall = true;
+
+    public event Action BallMissed;
 
     private void Start()
     {
@@ -38,6 +41,7 @@ public class BallController : MonoBehaviour
     {
         _holdingBall = true;
         _ballRigidbody.isKinematic = true;
+        BallMissed?.Invoke();
         _inputManager.RotationInputReceivedInTrowingZone += OnRotationInputReceived;
     }
 
@@ -47,6 +51,7 @@ public class BallController : MonoBehaviour
         {
             _holdingBall = true;
             _ballRigidbody.isKinematic = true;
+            BallMissed?.Invoke();
             _inputManager.RotationInputReceivedInTrowingZone += OnRotationInputReceived;
         }
     }

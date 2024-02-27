@@ -1,69 +1,67 @@
 using System;
 using System.IO;
+using TMPro;
 using UnityEngine;
 
 public class JSONReadWriteSystem : MonoBehaviour
 {
-    //public event Action<int, int> Changed;
+    private ResourceInteger[] _resources;
+    private ResourcesFeature _resourcesFeature;
 
-    //public int Hits
-    //{
-    //    get => _hits;
-    //    private set
-    //    {
-    //        var oldValue = _hits;
-    //        _hits = value;
+    public event Action<ResourcesFeature> ResourcesFeatureLoaded;
 
-    //        if (oldValue != _hits)
-    //        {
-    //            Changed?.Invoke(oldValue, _hits);
-    //        }
-    //    }
-    //}
-    //public int Misses
-    //{
-    //    get => _misses;
-    //    private set
-    //    {
-    //        var oldValue = _misses;
-    //        _misses = value;
+    private void Start()
+    {
+        LoadFormJson();
+    }
 
-    //        if (oldValue != _misses)
-    //        {
-    //            Changed?.Invoke(oldValue, _misses);
-    //        }
-    //    }
-    //}
-
-    private int _hits;
-    private int _misses;
-
-    //private void Awake()
-    //{
-    //    LoadFormJson();
-    //}
-
-    //private void OnDestroy()
-    //{
-    //    SaveToJson();
-    //}
+    private void OnDestroy()
+    {
+        SaveToJson();
+    }
 
     public void SaveToJson()
     {
         ScoreData data = new ScoreData();
-        data.HitsScore = _hits.ToString();
-        data.MissesScore = _misses.ToString();
+        data.HitsScore = _resourcesFeature.GetResourceValueString(ResourceType.Hit);
+        data.MissesScore = _resourcesFeature.GetResourceValueString(ResourceType.Miss);
 
         string json = JsonUtility.ToJson(data, true);
+
+#if UNITY_EDITOR
         File.WriteAllText(Application.streamingAssetsPath + "/ScoreData.json", json);
+#elif UNITY_ANDROID
+        File.WriteAllText(Application.persistentDataPath + "/ScoreData.json", json);
+#endif
     }
 
     public void LoadFormJson()
     {
+#if UNITY_EDITOR
         string json = File.ReadAllText(Application.streamingAssetsPath + "/ScoreData.json");
+#elif UNITY_ANDROID
+        if (!File.Exists(Application.persistentDataPath + "/ScoreData.json"))
+        {
+            WWW reader = new WWW(Application.streamingAssetsPath + "/ScoreData.json");
+            while (!reader.isDone) { }
+
+            File.WriteAllBytes(Application.persistentDataPath + "/ScoreData.json", reader.bytes);
+        }
+        string json = File.ReadAllText(Application.persistentDataPath + "/ScoreData.json");
+#endif
+
         ScoreData data = JsonUtility.FromJson<ScoreData>(json);
 
-        _hits = Convert.ToInt32(data.HitsScore);
-        _misses = Convert.ToInt32(data.MissesScore);
+        int hits = Convert.ToInt32(data.HitsScore);
+        int misses = Convert.ToInt32(data.MissesScore);
+
+        var hit = new ResourceInteger(ResourceType.Hit, hits);
+        var miss = new ResourceInteger(ResourceType.Miss, misses);
+
+        _resources = new[] { hit, miss };
+
+        _resourcesFeature = new ResourcesFeature(_resources);
+
+        ResourcesFeatureLoaded?.Invoke(_resourcesFeature);
     }
 }

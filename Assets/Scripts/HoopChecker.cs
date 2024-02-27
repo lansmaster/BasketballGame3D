@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class HoopChecker : MonoBehaviour
 {
     [SerializeField] private ParticleSystem _particleSystem;
+
+    public event Action BallHitted;
 
     private void Start()
     {
@@ -17,6 +20,7 @@ public class HoopChecker : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
+        BallHitted?.Invoke();
         StartCoroutine(Wait());
     }
 
