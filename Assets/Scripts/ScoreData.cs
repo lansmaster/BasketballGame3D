@@ -2,6 +2,7 @@
 [System.Serializable]
 public class ScoreData
 {
-    public string HitsScore;
-    public string MissesScore;
+    public int hits;
+    public int misses;
+    public string id;
 }

@@ -1,10 +1,15 @@
 using System;
 using System.IO;
-using TMPro;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class JSONReadWriteSystem : MonoBehaviour
 {
+    private static HttpClient httpClient = new HttpClient();
+
     private ResourceInteger[] _resources;
     private ResourcesFeature _resourcesFeature;
 
@@ -20,40 +25,34 @@ public class JSONReadWriteSystem : MonoBehaviour
         SaveToJson();
     }
 
-    public void SaveToJson()
+    private async Task SaveToJson()
     {
         ScoreData data = new ScoreData();
-        data.HitsScore = _resourcesFeature.GetResourceValueString(ResourceType.Hit);
-        data.MissesScore = _resourcesFeature.GetResourceValueString(ResourceType.Miss);
+        data.hits = int.Parse(_resourcesFeature.GetResourceValueString(ResourceType.Hit));
+        data.misses = int.Parse(_resourcesFeature.GetResourceValueString(ResourceType.Miss));
+        data.id = "1";
 
-        string json = JsonUtility.ToJson(data, true);
+        var content = new StringContent(JsonUtility.ToJson(data, true), Encoding.UTF8, "application/json");
 
-#if UNITY_EDITOR
-        File.WriteAllText(Application.streamingAssetsPath + "/ScoreData.json", json);
-#elif UNITY_ANDROID
-        File.WriteAllText(Application.persistentDataPath + "/ScoreData.json", json);
-#endif
+        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, "https://65e5bebfd7f0758a76e73bfd.mockapi.io/user_score/1");
+
+        request.Content = content;
+        Debug.Log(content);
+        var response = await httpClient.SendAsync(request);
     }
 
-    public void LoadFormJson()
+    private async Task LoadFormJson()
     {
-#if UNITY_EDITOR
-        string json = File.ReadAllText(Application.streamingAssetsPath + "/ScoreData.json");
-#elif UNITY_ANDROID
-        if (!File.Exists(Application.persistentDataPath + "/ScoreData.json"))
-        {
-            WWW reader = new WWW(Application.streamingAssetsPath + "/ScoreData.json");
-            while (!reader.isDone) { }
+        using HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "https://65e5bebfd7f0758a76e73bfd.mockapi.io/user_score/1");
 
-            File.WriteAllBytes(Application.persistentDataPath + "/ScoreData.json", reader.bytes);
-        }
-        string json = File.ReadAllText(Application.persistentDataPath + "/ScoreData.json");
-#endif
+        using HttpResponseMessage response = await httpClient.SendAsync(request);
 
-        ScoreData data = JsonUtility.FromJson<ScoreData>(json);
+        string content = await response.Content.ReadAsStringAsync();
 
-        int hits = Convert.ToInt32(data.HitsScore);
-        int misses = Convert.ToInt32(data.MissesScore);
+        ScoreData data = JsonUtility.FromJson<ScoreData>(content);
+
+        int hits = data.hits;
+        int misses = data.misses;
 
         var hit = new ResourceInteger(ResourceType.Hit, hits);
         var miss = new ResourceInteger(ResourceType.Miss, misses);
