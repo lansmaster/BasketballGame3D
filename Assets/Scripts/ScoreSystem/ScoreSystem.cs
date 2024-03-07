@@ -38,6 +38,7 @@ public class ScoreSystem : MonoBehaviour
     {
         _feature.AddResource(ResourceType.Hit, 1);
         _hitsText.text = _feature.GetResourceValueString(ResourceType.Hit);
+        _feature.DeleteResource(ResourceType.Miss, 1);
     }
 
     private void AddMiss()

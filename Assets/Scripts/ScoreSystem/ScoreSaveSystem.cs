@@ -30,7 +30,8 @@ public class ScoreSaveSystem : MonoBehaviour
     }
     private async Task Steps()
     {
-        var task = Task.Run(() => {
+        var task = Task.Run(() => 
+        {
             Thread.Sleep(5000);
         });
 
@@ -42,16 +43,12 @@ public class ScoreSaveSystem : MonoBehaviour
 
     private void OnApplicationPause(bool pause)
     {
-#if UNITY_ANDROID 
         _ = PutRequest();
-#endif
     }
 
     private void OnApplicationQuit()
     {
-#if UNITY_EDITOR
         _ = PutRequest();
-#endif
     }
 
     private async Task PutRequest()
