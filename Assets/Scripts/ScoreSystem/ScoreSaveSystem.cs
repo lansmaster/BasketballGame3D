@@ -16,39 +16,57 @@ public class ScoreSaveSystem : MonoBehaviour
 
     private void Start()
     {
-        _ = Steps();
+        InitScore();
+    }
+
+    private async void InitScore()
+    {
+        Steps();
 
         if (PlayerPrefs.GetString("UserID") != String.Empty)
         {
-            _ = GetRequest();
+            await GetRequest();
         }
         else
         {
             SetDefaultScore();
-            _ = PostRequest();
+            //
+            await PostRequest();
         }
     }
-    private async Task Steps()
+
+    private async void Steps()
     {
         var task = Task.Run(() => 
         {
             Thread.Sleep(5000);
         });
 
-        _ = PutRequest();
+        AwaitPutRequest();
 
         await task;
-        _ = Steps();
+
+        if (Application.isPlaying)
+        {
+            Steps();
+        }
     }
 
     private void OnApplicationPause(bool pause)
     {
-        _ = PutRequest();
+        AwaitPutRequest();
     }
 
     private void OnApplicationQuit()
     {
-        _ = PutRequest();
+        AwaitPutRequest();
+    }
+
+    private async void AwaitPutRequest()
+    {
+        await PutRequest();
+
+        Debug.Log("Done");
     }
 
     private async Task PutRequest()
